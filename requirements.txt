@@ -10,3 +10,5 @@ yfinance
 ffn
 Flask
 gunicorn
+google-generativeai
+python-dotenv

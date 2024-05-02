@@ -11,12 +11,14 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
 import os
+import google.generativeai as genai
 
 app = Flask(__name__)
 
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
-
+genai.configure(api_key=os.environ['Gemini_API_KEY'])
+model = genai.GenerativeModel('gemini-pro')
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -31,7 +33,8 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    message = TextSendMessage(text=event.message.text)
+    response = model.generate_content(event.message.text)
+    message = TextSendMessage(text=response.text)
     line_bot_api.reply_message(event.reply_token, message)
 
 import os
